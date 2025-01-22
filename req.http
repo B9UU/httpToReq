@@ -1,0 +1,8 @@
+GET https://google.com
+Host: google.com
+Cache-Control: max-age=0
+Accept: text/*
+
+{
+"laqo":2
+}

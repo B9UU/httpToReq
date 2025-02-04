@@ -1,8 +1,28 @@
-GET https://google.com
+
+GET https://google.com HTTP/1.1
 Host: google.com
 Cache-Control: max-age=0
 Accept: text/*
 
 {
 "laqo":2
+}
+
+###
+
+GET https://example.com/comments/1 HTTP/1.1
+
+###
+
+GET https://example.com/topics/1 HTTP/1.1
+
+###
+
+POST https://example.com/comments HTTP/1.1
+content-type: application/json
+Content-Length: 78
+
+{
+    "name": "sample",
+    "time": "Wed, 21 Oct 2015 18:27:50 GMT"
 }

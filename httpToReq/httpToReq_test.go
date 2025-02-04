@@ -8,7 +8,8 @@ import (
 	"testing"
 )
 
-func TestParseHTTPFile(t *testing.T) {
+// TODO: add no request test
+func TestGetOne(t *testing.T) {
 	tests := []struct {
 		name     string
 		content  string
@@ -59,19 +60,19 @@ func TestParseHTTPFile(t *testing.T) {
 				}
 				return
 			}
+
 			if err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
 
-			// Check result for a single request
-			if !compareRequests(result, tt.expected) {
+			if !compareRequest(result, tt.expected) {
 				t.Errorf("expected %+v, got %+v", tt.expected, result)
 			}
 		})
 	}
 }
 
-func compareRequests(req1, req2 *http.Request) bool {
+func compareRequest(req1, req2 *http.Request) bool {
 	if req1.Method != req2.Method || req1.URL.String() != req2.URL.String() {
 		return false
 	}

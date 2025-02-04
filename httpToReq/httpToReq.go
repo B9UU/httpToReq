@@ -27,7 +27,8 @@ func GetOne(data []byte) (*http.Request, error) {
 		return nil, err
 	}
 	var req *http.Request
-	if method == http.MethodPost { // should be the new line
+
+	if method == http.MethodPost {
 		var body bytes.Buffer
 		for scanner.Scan() {
 			line := scanner.Text()
@@ -51,6 +52,51 @@ func GetOne(data []byte) (*http.Request, error) {
 	}
 	req.Header = headers
 	return req, nil
+}
+
+func ParseFile(data []byte) ([]*http.Request, error) {
+	file := bytes.NewReader(data)
+	scanner := bufio.NewScanner(file)
+	reqsts := []*http.Request{}
+	for {
+		req, hasN, err := ParseReq(scanner)
+		if err != nil {
+			return nil, err
+		}
+		reqsts = append(reqsts, req)
+		if !hasN {
+			break
+		}
+	}
+	return reqsts, nil
+}
+
+func ParseReq(scanner *bufio.Scanner) (*http.Request, bool, error) {
+	var req bytes.Buffer
+	var hasNewReq bool
+	var startLine bool
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if !startLine {
+			startLine = isReq(line)
+		}
+		if line == "###" {
+			fmt.Println("new request")
+			hasNewReq = true
+			break
+		}
+		if startLine {
+			req.WriteString(line + "\n")
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, false, fmt.Errorf("Scanner err: %w", err)
+	}
+	request, err := http.ReadRequest(bufio.NewReader(&req))
+	if err != nil {
+		return nil, false, err
+	}
+	return request, hasNewReq, nil
 }
 
 func checkMethod(method string) bool {
